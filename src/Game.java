@@ -27,16 +27,16 @@ public class Game implements KeyListener {
     public void keyPressed(KeyEvent e) {
 
         int keyCode =e.getKeyCode();
-        if(keyCode == KeyEvent.VK_W){
+        if(keyCode == KeyEvent.VK_W && player.getMove() != "DOWN"){
             player.up();
         }
-        else if(keyCode == KeyEvent.VK_S){
+        else if(keyCode == KeyEvent.VK_S && player.getMove() != "UP"){
             player.down();
         }
-        else if(keyCode == KeyEvent.VK_A){
+        else if(keyCode == KeyEvent.VK_A && player.getMove() != "RIGHT"){
             player.left();
         }
-        else if(keyCode == KeyEvent.VK_D){
+        else if(keyCode == KeyEvent.VK_D && player.getMove() != "LEFT"){
             player.right();
         }
     }
