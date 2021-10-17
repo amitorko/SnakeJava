@@ -1,30 +1,64 @@
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class Game implements KeyListener {
+import javax.swing.JFrame;
+
+public class Game
+        implements KeyListener{
     private Snake player;
     private Food food;
+    private Graphics graphics;
+
     private JFrame window;
+
     public static final int width = 30;
     public static final int height = 30;
     public static final int dimension = 20;
-    private Graphics graphics;
 
-    public Game(){
-        window= new JFrame();
-        window.setTitle("Snake 1000");
-        window.setSize(width*dimension, height*dimension);
+    public Game() {
+        window = new JFrame();
+
+        player = new Snake();
+
+        food = new Food(player);
+
+        graphics = new Graphics(this);
+
+        window.add(graphics);
+
+        window.setTitle("Snake");
+        window.setSize(width * dimension + 2, height * dimension + dimension + 4);
         window.setVisible(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
 
+    public void start() {
+        graphics.state = "RUNNING";
     }
-    public boolean check_wall_collision(){
-        if(player.getX()<0 || player.getX()>=width * dimension || player.getY()<0
-                || player.getY() > height * dimension){
+
+    public void update() {
+        if(graphics.state == "RUNNING") {
+            if(check_food_collision()) {
+                player.grow();
+                food.random_spawn(player);
+            }
+            else if(check_wall_collision() || check_self_collision()) {
+                graphics.state = "END";
+            }
+            else {
+                player.move();
+            }
+        }
+    }
+
+    private boolean check_wall_collision() {
+        if(player.getX() < 0 || player.getX() >= width * dimension
+                || player.getY() < 0|| player.getY() >= height * dimension) {
             return true;
-        }return false;
+        }
+        return false;
     }
+
     private boolean check_food_collision() {
         if(player.getX() == food.getX() * dimension && player.getY() == food.getY() * dimension) {
             return true;
@@ -43,34 +77,44 @@ public class Game implements KeyListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {	}
 
     @Override
     public void keyPressed(KeyEvent e) {
 
-        int keyCode =e.getKeyCode();
-        if(keyCode == KeyEvent.VK_W && player.getMove() != "DOWN"){
-            player.up();
+        int keyCode = e.getKeyCode();
+
+        if(graphics.state == "RUNNING") {
+            if(keyCode == KeyEvent.VK_W && player.getMove() != "DOWN") {
+                player.up();
+            }
+
+            if(keyCode == KeyEvent.VK_S && player.getMove() != "UP") {
+                player.down();
+            }
+
+            if(keyCode == KeyEvent.VK_A && player.getMove() != "RIGHT") {
+                player.left();
+            }
+
+            if(keyCode == KeyEvent.VK_D && player.getMove() != "LEFT") {
+                player.right();
+            }
         }
-        else if(keyCode == KeyEvent.VK_S && player.getMove() != "UP"){
-            player.down();
-        }
-        else if(keyCode == KeyEvent.VK_A && player.getMove() != "RIGHT"){
-            player.left();
-        }
-        else if(keyCode == KeyEvent.VK_D && player.getMove() != "LEFT"){
-            player.right();
+        else {
+            this.start();
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {	}
 
-    public Snake getPlayer(){
+    public Snake getPlayer() {
         return player;
     }
-    public void setPlayer(Snake player){
-        this.player =player;
+
+    public void setPlayer(Snake player) {
+        this.player = player;
     }
 
     public Food getFood() {
@@ -88,4 +132,5 @@ public class Game implements KeyListener {
     public void setWindow(JFrame window) {
         this.window = window;
     }
+
 }
